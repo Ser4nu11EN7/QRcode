@@ -1,0 +1,111 @@
+/* src/app/HomePage.module.css */
+
+.container {
+  display: flex; /* 使用 Flexbox 布局 */
+  flex-direction: column; /* 子元素垂直排列 */
+  align-items: center; /* 水平居中对齐 */
+  justify-content: center; /* 垂直方向内容尽量居中 (对小屏幕效果更好) */
+  min-height: 100vh; /* 容器至少占满整个视口高度 */
+  padding: 2rem; /* 内边距 */
+  background-color: #f8f9fa; /* 淡灰色背景 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* 使用系统默认字体 */
+}
+
+.card {
+  background-color: #ffffff; /* 白色卡片背景 */
+  padding: 2rem 2.5rem; /* 卡片内边距 */
+  border-radius: 8px; /* 圆角 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+  width: 100%;
+  max-width: 500px; /* 最大宽度 */
+  text-align: center; /* 卡片内文本居中 */
+}
+
+.title {
+  color: #343a40; /* 深灰色标题 */
+  margin-bottom: 1.5rem; /* 标题下边距 */
+  font-size: 1.8rem; /* 标题字号 */
+  font-weight: 600; /* 标题字重 */
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ced4da; /* 边框颜色 */
+  border-radius: 4px;
+  font-size: 1rem;
+  line-height: 1.5;
+  box-sizing: border-box; /* 让 padding 不会撑大宽度 */
+  resize: vertical; /* 允许垂直方向调整大小 */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* 添加过渡效果 */
+}
+
+.textarea:focus {
+  border-color: #80bdff; /* 聚焦时边框颜色 */
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* 聚焦时外发光效果 */
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  background-color: #007bff; /* 蓝色主色调 */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease; /* 过渡效果 */
+}
+
+.button:hover {
+  background-color: #0056b3; /* 悬停时颜色变深 */
+}
+
+.button:active {
+  transform: scale(0.98); /* 点击时轻微缩小 */
+}
+
+.button:disabled {
+  background-color: #6c757d; /* 禁用时颜色 */
+  cursor: not-allowed;
+}
+
+.error {
+  color: #dc3545; /* 红色错误信息 */
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.qrCodeArea {
+  margin-top: 2rem; /* 二维码区域上边距 */
+  padding: 1.5rem;
+  border: 1px dashed #ced4da; /* 虚线边框 */
+  border-radius: 4px;
+  background-color: #f8f9fa; /* 轻微背景色区分 */
+  display: inline-block; /* 让边框包裹内容 */
+}
+
+.qrCodeImage {
+  display: block; /* 让图片成为块级元素，消除下方空隙 */
+  max-width: 100%; /* 图片最大宽度 */
+  height: auto; /* 高度自适应 */
+  margin-bottom: 1rem; /* 图片和下载链接间距 */
+}
+
+.downloadLink {
+  display: inline-block; /* 块级链接 */
+  margin-top: 1rem; /* 顶部间距 */
+  text-decoration: none;
+  color: #007bff;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.downloadLink:hover {
+  background-color: #007bff;
+  color: white;
+}

@@ -1,103 +1,109 @@
-import Image from "next/image";
+// src/app/page.tsx
+'use client'; // 必须标记为客户端组件
 
-export default function Home() {
+import React, { useState } from 'react'; // 导入 React 和 useState Hook
+import QRCode from 'qrcode'; // 导入 qrcode 库
+import styles from './HomePage.module.css'; // 导入 CSS Module
+
+export default function HomePage() {
+  // --- State Hooks ---
+  const [text, setText] = useState<string>(''); // 用于存储用户输入的文本
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null); // 用于存储生成的 QR Code Data URL
+  const [isLoading, setIsLoading] = useState<boolean>(false); // 用于控制按钮的加载状态
+  const [error, setError] = useState<string | null>(null); // 用于显示错误信息
+
+  // --- Event Handlers ---
+  // 当文本区域内容改变时调用
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(event.target.value); // 更新文本 state
+    setError(null); // 清除之前的错误信息
+    setQrCodeUrl(null); // 清除之前生成的二维码，因为输入变了
+  };
+
+  // 点击“生成”按钮时调用
+  const generateQrCode = async () => {
+    // 简单验证：确保输入不为空或仅包含空格
+    if (!text.trim()) {
+      setError('Please enter some text.'); // 设置错误信息
+      setQrCodeUrl(null); // 确保没有旧的二维码显示
+      return; // 提前退出函数
+    }
+
+    setIsLoading(true); // 开始加载，禁用按钮
+    setError(null); // 清除之前的错误
+    setQrCodeUrl(null); // 清除之前的二维码
+
+    try {
+      // --- 核心：使用 qrcode 库生成 Data URL ---
+      const url = await QRCode.toDataURL(text, {
+        errorCorrectionLevel: 'H', // 容错级别设为最高 (H)
+        type: 'image/png',        // 输出 PNG 格式
+        quality: 0.9,             // 图片质量 (0-1)
+        margin: 1,                // 二维码边距 (模块数)
+        width: 256                // 指定输出图片的宽度 (像素)，有助于扫描
+      });
+      setQrCodeUrl(url); // 成功生成，将 Data URL 保存到 state
+    } catch (err) {
+      // 如果生成过程中发生错误
+      console.error('QR Code generation error:', err); // 在控制台打印错误详情
+      setError('Failed to generate QR code. Please try again.'); // 设置用户可见的错误信息
+    } finally {
+      // 无论成功或失败，最终都要结束加载状态
+      setIsLoading(false); // 重新启用按钮
+    }
+  };
+
+  // --- JSX (组件的 UI 结构) ---
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    // 使用 styles.container 应用整体布局和背景色
+    <div className={styles.container}>
+      {/* 使用 styles.card 创建白色卡片容器 */}
+      <div className={styles.card}>
+        {/* 使用 styles.title 应用标题样式 */}
+        <h1 className={styles.title}>Quick Text-to-QR Code</h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+        {/* 使用 styles.textarea 应用文本区域样式 */}
+        <textarea
+          className={styles.textarea}
+          value={text} // 绑定 state 中的 text
+          onChange={handleTextChange} // 绑定文本变化事件处理器
+          placeholder="Enter text here..." // 提示文字
+          rows={5} // 默认显示的行数
+        />
+
+        {/* 使用 styles.button 应用按钮样式 */}
+        <button
+          className={styles.button}
+          onClick={generateQrCode} // 绑定点击事件处理器
+          disabled={isLoading} // 当 isLoading 为 true 时禁用按钮
+        >
+          {isLoading ? 'Generating...' : 'Generate QR Code'} {/* 根据加载状态显示不同文本 */}
+        </button>
+
+        {/* 如果有错误信息，则显示，并应用 styles.error 样式 */}
+        {error && <p className={styles.error}>{error}</p>}
+
+        {/* 如果 qrCodeUrl 存在 (即已生成)，则显示二维码区域 */}
+        {qrCodeUrl && (
+          // 使用 styles.qrCodeArea 应用二维码容器样式
+          <div className={styles.qrCodeArea}>
+            {/* 使用 styles.qrCodeImage 应用图片样式 */}
+            <img
+              src={qrCodeUrl} // 图片源为生成的 Data URL
+              alt="Generated QR Code" // 图片替代文本
+              className={styles.qrCodeImage}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            {/* 下载链接 */}
+            <a
+              href={qrCodeUrl} // 链接地址也是 Data URL
+              download="qrcode.png" // 指定下载的文件名
+              className={styles.downloadLink} // 应用下载链接样式
+            >
+              Download QR Code
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
