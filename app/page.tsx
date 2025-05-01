@@ -38,7 +38,6 @@ export default function HomePage() {
       const url = await QRCode.toDataURL(text, {
         errorCorrectionLevel: 'H', // 容错级别设为最高 (H)
         type: 'image/png',        // 输出 PNG 格式
-        quality: 0.9,             // 图片质量 (0-1)
         margin: 1,                // 二维码边距 (模块数)
         width: 256                // 指定输出图片的宽度 (像素)，有助于扫描
       });
